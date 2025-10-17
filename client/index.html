@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>🎬 Movie Finder</title>
+  <link rel="stylesheet" href="style.css" />
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+</head>
+<body>
+  <h1>🎬 Movie Finder</h1>
+
+  <!-- Search Section -->
+  <section id="search">
+    <input id="query" placeholder="Search movies..." />
+    <input id="minYear" type="number" placeholder="Min Year" />
+    <input id="minRating" type="number" step="0.1" placeholder="Min Rating" />
+    <button id="searchBtn">Search</button>
+  </section>
+
+  <section id="results">
+    <h2>Results</h2>
+    <div id="movieList"></div>
+  </section>
+
+  <!-- User Login/Signup -->
+  <section id="auth">
+    <h2>Login / Signup</h2>
+    <input id="username" placeholder="Username" />
+    <input id="password" type="password" placeholder="Password" />
+    <button id="loginBtn">Login</button>
+    <button id="signupBtn">Signup</button>
+  </section>
+
+  <!-- Chart Section -->
+  <section id="chartSection" style="display:none;">
+    <h2>Your Favorite Genres</h2>
+    <canvas id="genreChart" width="400" height="200"></canvas>
+  </section>
+
+  <script type="module" src="app.js"></script>
+</body>
+</html>
