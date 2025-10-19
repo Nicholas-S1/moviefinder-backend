@@ -1,79 +1,103 @@
+/* 🌙 Dark Mode Theme */
 body {
   margin: 0;
-  font-family: "Segoe UI", Arial, sans-serif;
-  background-color: #f8f9fa;
-  color: #222;
+  font-family: "Inter", sans-serif;
+  background-color: #111;
+  color: #eee;
 }
 
-h2, h3 {
-  margin-top: 0;
-  color: #222;
-}
-
+/* Center content on page */
 .page {
-  padding: 20px;
   max-width: 900px;
-  margin: 0 auto;
+  margin: 40px auto;
+  padding: 20px;
+  background: #181818;
+  border-radius: 12px;
+  box-shadow: 0 2px 12px rgba(0, 0, 0, 0.4);
 }
 
-.navbar {
-  background-color: #222;
-  color: white;
+/* Navbar styling */
+nav.navbar {
   display: flex;
   justify-content: space-between;
   align-items: center;
+  background-color: #000;
+  color: #fff;
   padding: 12px 24px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.6);
 }
 
-.navbar a {
-  color: white;
+nav.navbar a {
+  color: #fff;
   text-decoration: none;
-  margin: 0 12px;
   font-weight: 500;
+  margin: 0 10px;
 }
 
-.navbar a:hover {
-  text-decoration: underline;
+nav.navbar a:hover {
+  color: #3a86ff;
 }
 
-.card-list {
-  margin-top: 20px;
-}
-
-.card {
-  background-color: white;
+/* Movie cards */
+.movie-card {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  background: #222;
+  border: 1px solid #333;
+  padding: 12px 16px;
+  margin: 10px 0;
   border-radius: 8px;
-  box-shadow: 0 1px 4px rgba(0, 0, 0, 0.1);
-  padding: 16px;
-  margin-bottom: 12px;
-  transition: transform 0.2s;
+  transition: transform 0.2s, background 0.2s;
 }
 
-.card:hover {
-  transform: translateY(-2px);
+.movie-card:hover {
+  background: #282828;
+  transform: scale(1.01);
+}
+
+/* Inputs + buttons */
+input {
+  background-color: #222;
+  border: 1px solid #444;
+  color: #fff;
+  padding: 8px;
+  border-radius: 4px;
+}
+
+input:focus {
+  outline: none;
+  border-color: #3a86ff;
 }
 
 button {
-  background-color: #0078d7;
+  background-color: #3a86ff;
+  color: #fff;
   border: none;
-  color: white;
-  padding: 6px 12px;
-  border-radius: 4px;
+  padding: 8px 12px;
+  border-radius: 6px;
   cursor: pointer;
+  transition: background 0.3s;
 }
 
 button:hover {
-  background-color: #005fa3;
-}
-
-input {
-  padding: 6px;
-  margin-right: 8px;
-  border-radius: 4px;
-  border: 1px solid #ccc;
+  background-color: #2664cc;
 }
 
 .muted {
-  color: #777;
+  color: #888;
   font-size: 0.9em;
+}
+
+/* Responsive */
+@media (max-width: 700px) {
+  .page {
+    margin: 10px;
+    padding: 15px;
+  }
+
+  .movie-card {
+    flex-direction: column;
+    align-items: flex-start;
+  }
 }

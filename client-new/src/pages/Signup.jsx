@@ -1,4 +1,6 @@
-import React, { useState } from "react";
+import React, { useState, useContext } from "react";
+import { useNavigate } from "react-router-dom";
+import { UserContext } from "../App.jsx"; // ✅ to access global user
 import { API_BASE_URL } from "../config.js";
 
 export default function Signup() {
@@ -6,6 +8,8 @@ export default function Signup() {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [msg, setMsg] = useState("");
+  const { setCurrentUser } = useContext(UserContext); // ✅ add this
+  const navigate = useNavigate(); // ✅ add this
 
   const handleSignup = async (e) => {
     e.preventDefault();
@@ -15,11 +19,22 @@ export default function Signup() {
       const res = await fetch(`${import.meta.env.VITE_API_URL}/api/signup`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ name, email, password }),
+        body: JSON.stringify({
+          full_name: name,
+          username: email,
+          password: password,
+        }),
       });
 
       const data = await res.json();
-      setMsg(data.success ? "✅ Account created! You can log in now." : data.error || "Signup failed.");
+
+      if (res.ok && data.user_id) {
+        // ✅ Auto-login
+        setCurrentUser(data);
+        navigate("/movies");
+      } else {
+        setMsg(data.error || "Signup failed.");
+      }
     } catch (err) {
       console.error(err);
       setMsg("Server error.");

@@ -6,7 +6,7 @@ import Movies from './pages/Movies';
 import Recommendations from './pages/Recommendations';
 import Login from './pages/Login';
 import Signup from './pages/Signup';
-import GenreChart from './pages/GenreChart';
+import  from './pages/';
 import './App.css';
 
 function App() {
@@ -31,7 +31,7 @@ function App() {
             <Route path="/" element={<Home />} />
             <Route path="/movies" element={<Movies />} />
             <Route path="/recommendations" element={<Recommendations />} />
-            <Route path="/chart" element={<GenreChart />} />
+            <Route path="/chart" element={< />} />
             <Route path="/login" element={<Login />} />
             <Route path="/signup" element={<Signup />} />
           </Routes>

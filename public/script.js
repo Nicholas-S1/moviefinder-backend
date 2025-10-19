@@ -11,24 +11,12 @@ async function search() {
   });
 }
 
-// Example static genre chart (replace with /api/users/:id/genres later)
-const ctx = document.getElementById('genreChart');
-new Chart(ctx, {
-  type: 'bar',
-  data: {
-    labels: ['Action', 'Comedy', 'Drama', 'Sci-Fi'],
-    datasets: [{
-      label: 'Your Top Genres',
-      data: [12, 8, 5, 3],
-      backgroundColor: 'rgba(75,192,192,0.5)'
-    }]
-  }
-});
-async function loadGenreChart(userId) {
+
+async function load(userId) {
   const res = await fetch(`http://localhost:5000/api/users/${userId}/genres`);
   const json = await res.json();
 
-  new Chart(document.getElementById('genreChart'), {
+  new Chart(document.getElementById(''), {
     type: 'bar',
     data: {
       labels: json.labels,

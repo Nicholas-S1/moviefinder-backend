@@ -6,8 +6,10 @@ export default function NavBar() {
   const { currentUser, setCurrentUser } = useContext(UserContext);
   const navigate = useNavigate();
 
+  // ✅ Logout handler clears state and storage
   const handleLogout = () => {
     setCurrentUser(null);
+    localStorage.removeItem("movieFinderUser"); // clears stored login
     navigate("/login");
   };
 
@@ -22,24 +24,15 @@ export default function NavBar() {
         color: "#fff",
       }}
     >
-      {/* Left side */}
-      <div style={{ display: "flex", gap: "12px" }}>
-        <Link to="/" style={linkStyle}>
-          Home
-        </Link>
-        <Link to="/movies" style={linkStyle}>
-          Movies
-          <Link to="/watchlater" style={linkStyle}>
-  Watch Later
-</Link>
-
-        </Link>
-        <Link to="/recommendations" style={linkStyle}>
-          Recommendations
-        </Link>
+      {/* Left side navigation links */}
+      <div style={{ display: "flex", gap: "16px" }}>
+        <Link to="/" style={linkStyle}>Home</Link>
+        <Link to="/movies" style={linkStyle}>Movies</Link>
+        <Link to="/watchlater" style={linkStyle}>Watch Later</Link>
+        <Link to="/recommendations" style={linkStyle}>Recommendations</Link>
       </div>
 
-      {/* Right side */}
+      {/* Right side — user / auth controls */}
       <div style={{ display: "flex", gap: "12px" }}>
         {currentUser ? (
           <>
@@ -53,8 +46,8 @@ export default function NavBar() {
                 border: "none",
                 color: "#fff",
                 padding: "6px 10px",
-                cursor: "pointer",
                 borderRadius: "4px",
+                cursor: "pointer",
               }}
             >
               Logout
@@ -62,12 +55,8 @@ export default function NavBar() {
           </>
         ) : (
           <>
-            <Link to="/login" style={linkStyle}>
-              Login
-            </Link>
-            <Link to="/signup" style={linkStyle}>
-              Signup
-            </Link>
+            <Link to="/login" style={linkStyle}>Login</Link>
+            <Link to="/signup" style={linkStyle}>Signup</Link>
           </>
         )}
       </div>

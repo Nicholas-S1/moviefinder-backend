@@ -1,34 +1,38 @@
-import React, { useContext, useState } from "react";
+import React, { useState, useContext } from "react";
+import { useNavigate } from "react-router-dom";
 import { UserContext } from "../App.jsx";
-import { API_BASE_URL } from "../config.js";
 
 export default function Login() {
   const { setCurrentUser } = useContext(UserContext);
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [msg, setMsg] = useState("");
+  const navigate = useNavigate();
 
   const handleLogin = async (e) => {
     e.preventDefault();
     setMsg("");
 
     try {
-      const res = awaitfetch(`${import.meta.env.VITE_API_URL}/api/login`, {
+      const res = await fetch(`${import.meta.env.VITE_API_URL}/api/login`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ username: email, password }),
+        body: JSON.stringify({
+          username: email, // ✅ matches backend field name
+          password,
+        }),
       });
 
       const data = await res.json();
-      if (data.success && data.user) {
-        setCurrentUser(data.user);
-        setMsg("✅ Logged in successfully!");
+      if (res.ok && data.user_id) {
+        setCurrentUser(data);
+        navigate("/movies");
       } else {
-        setMsg(data.error || "Invalid credentials.");
+        setMsg(data.error || "Invalid login credentials");
       }
     } catch (err) {
       console.error(err);
-      setMsg("Server error.");
+      setMsg("Server error");
     }
   };
 

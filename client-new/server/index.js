@@ -165,6 +165,7 @@ app.get("/api/movies/:id/similar-by-director", async (req, res) => {
 // SIGNUP
 app.post("/api/signup", async (req, res) => {
   const { full_name, username, password } = req.body;
+  console.log("📥 Signup received:", { full_name, username, password });
   try {
     const hash = await bcrypt.hash(password, 10);
     const result = await pool.query(
@@ -173,36 +174,49 @@ app.post("/api/signup", async (req, res) => {
        RETURNING user_id, username, created_at;`,
       [full_name, username, hash]
     );
-    res.status(201).json(result.rows[0]);
+    res.status(201).json({ success: true, ...result.rows[0] });
   } catch (err) {
     console.error("❌ Signup error:", err.message);
-    res.status(400).json({ error: "Username already exists or invalid data" });
+    if (err.message.includes("duplicate key value")) {
+      return res.status(400).json({ error: "That email is already registered." });
+    }
+    res.status(400).json({ error: "Invalid signup data" });
   }
 });
+
+
+
 
 // LOGIN
 app.post("/api/login", async (req, res) => {
   const { username, password } = req.body;
+  console.log("📥 Login attempt:", { username });
+
   try {
-    const user = await pool.query(`SELECT * FROM users WHERE username=$1`, [
-      username,
-    ]);
-    if (user.rows.length === 0)
+    const user = await pool.query(`SELECT * FROM users WHERE username = $1`, [username]);
+
+    if (user.rows.length === 0) {
       return res.status(401).json({ error: "Invalid username or password" });
+    }
 
     const valid = await bcrypt.compare(password, user.rows[0].password_hash);
-    if (!valid)
+    if (!valid) {
       return res.status(401).json({ error: "Invalid username or password" });
+    }
 
+    // ✅ Success — return minimal info
     res.json({
       user_id: user.rows[0].user_id,
       username: user.rows[0].username,
+      full_name: user.rows[0].full_name,
     });
   } catch (err) {
     console.error("❌ Login error:", err.message);
     res.status(500).json({ error: "Server error" });
   }
 });
+
+
 
 // =======================
 //  USER INTERACTIONS
