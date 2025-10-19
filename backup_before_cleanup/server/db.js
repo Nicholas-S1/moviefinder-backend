@@ -4,17 +4,10 @@
 
 import pkg from 'pg';
 import dotenv from 'dotenv';
-<<<<<<< HEAD
 dotenv.config();
-=======
-
-// Load environment variables
-dotenv.config({ path: './.env' });
->>>>>>> 788e07e (Fix API base URL for Render deployment)
 
 const { Pool } = pkg;
 
-<<<<<<< HEAD
 // Connection configuration
 const pool = new Pool({
   connectionString: process.env.DATABASE_URL,
@@ -25,21 +18,6 @@ const pool = new Pool({
 });
 
 export default pool;
-=======
-if (process.env.DATABASE_URL) {
-  poolConfig = {
-    connectionString: process.env.DATABASE_URL,
-    ssl: {
-      require: true,
-      rejectUnauthorized: false,
-    },
-  };
-} else {
-  console.error('❌ DATABASE_URL not found in environment!');
-}
-
-export const pool = new Pool(poolConfig);
->>>>>>> 788e07e (Fix API base URL for Render deployment)
 
 // --- Optional: quick connection test on startup ---
 pool

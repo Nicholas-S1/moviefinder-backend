@@ -2,19 +2,11 @@
 // 🎬 Movie Finder Backend (Render + Neon)
 // =======================
 
-<<<<<<< HEAD
 import express from 'express';
 import cors from 'cors';
 import dotenv from 'dotenv';
 import bcrypt from 'bcryptjs';
-import  pool from './db.js'; // ✅ Use the shared connection here
-=======
-import express from "express";
-import cors from "cors";
-import dotenv from "dotenv";
-import bcrypt from "bcryptjs";
-import { pool } from "./db.js"; // ✅ Shared DB connection
->>>>>>> 788e07e (Fix API base URL for Render deployment)
+import { pool } from './db.js'; // ✅ Use the shared connection here
 
 // =======================
 //  Environment Setup
