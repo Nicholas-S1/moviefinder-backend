@@ -100,7 +100,7 @@ export default function Movies() {
   value={minYear}
   onChange={(e) => setMinYear(e.target.value.replace(/\D/g, ""))}
   style={inputStyle}
-/>
+
 
         />
         <input
