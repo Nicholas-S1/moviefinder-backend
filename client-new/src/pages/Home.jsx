@@ -1,59 +1,54 @@
-import React, { useState } from "react";
+import React, { useEffect, useState, useContext } from "react";
+import { UserContext } from "../App.jsx";
 import { API_BASE_URL } from "../config.js";
+import {
+  BarChart, Bar, XAxis, YAxis, Tooltip, Legend, ResponsiveContainer
+} from "recharts";
 
-export default function Signup() {
-  const [name, setName] = useState("");
-  const [email, setEmail] = useState("");
-  const [password, setPassword] = useState("");
-  const [msg, setMsg] = useState("");
+export default function Home() {
+  const { currentUser } = useContext(UserContext);
+  const [chartData, setChartData] = useState([]);
 
-  const handleSignup = async (e) => {
-    e.preventDefault();
-    setMsg("");
-
-    try {
-      const res = await fetch(`${import.meta.env.VITE_API_URL}/api/signup`, {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ name, email, password }),
-      });
-
-      const data = await res.json();
-      setMsg(data.success ? "✅ Account created! You can log in now." : data.error || "Signup failed.");
-    } catch (err) {
-      console.error(err);
-      setMsg("Server error.");
-    }
-  };
+  useEffect(() => {
+    if (!currentUser) return;
+    fetch(`${API_BASE_URL}/users/${currentUser.user_id}/genres`)
+      .then(res => res.json())
+      .then(data => {
+        const formatted = data.labels.map((g, i) => ({
+          genre: g,
+          movies: data.data[i],
+        }));
+        setChartData(formatted);
+      })
+      .catch(() => setChartData([]));
+  }, [currentUser]);
 
   return (
     <div className="page">
-      <h2>Sign Up</h2>
-      <form onSubmit={handleSignup}>
-        <input
-          type="text"
-          placeholder="Name"
-          value={name}
-          onChange={(e) => setName(e.target.value)}
-          required
-        />
-        <input
-          type="email"
-          placeholder="Email"
-          value={email}
-          onChange={(e) => setEmail(e.target.value)}
-          required
-        />
-        <input
-          type="password"
-          placeholder="Password"
-          value={password}
-          onChange={(e) => setPassword(e.target.value)}
-          required
-        />
-        <button type="submit">Sign Up</button>
-      </form>
-      {msg && <p className="muted">{msg}</p>}
+      <h2>Welcome to Movie Finder 🎬</h2>
+
+      {!currentUser && (
+        <p className="muted">Log in to see your personalized genre stats!</p>
+      )}
+
+      {currentUser && (
+        <>
+          <h3>Your Genre Chart</h3>
+          {chartData.length > 0 ? (
+            <ResponsiveContainer width="100%" height={300}>
+              <BarChart data={chartData}>
+                <XAxis dataKey="genre" />
+                <YAxis />
+                <Tooltip />
+                <Legend />
+                <Bar dataKey="movies" fill="#82ca9d" />
+              </BarChart>
+            </ResponsiveContainer>
+          ) : (
+            <p className="muted">No data yet — like or rate some movies to get started!</p>
+          )}
+        </>
+      )}
     </div>
   );
 }

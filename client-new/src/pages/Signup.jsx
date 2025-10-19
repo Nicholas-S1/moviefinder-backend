@@ -12,10 +12,10 @@ export default function Signup() {
     setMsg("");
 
     try {
-      const res = await fetch(`${API_BASE_URL}/signup`, {
+      const res = await fetch(`${import.meta.env.VITE_API_URL}/api/signup`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ full_name: name, username: email, password }),
+        body: JSON.stringify({ name, email, password }),
       });
 
       const data = await res.json();

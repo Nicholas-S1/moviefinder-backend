@@ -29,6 +29,10 @@ export default function NavBar() {
         </Link>
         <Link to="/movies" style={linkStyle}>
           Movies
+          <Link to="/watchlater" style={linkStyle}>
+  Watch Later
+</Link>
+
         </Link>
         <Link to="/recommendations" style={linkStyle}>
           Recommendations
