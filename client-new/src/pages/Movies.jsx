@@ -1,5 +1,9 @@
-import React, { useContext, useState } from 'react'
-import { API_BASE_URL, UserContext } from '../config.js'
+
+import React, { useContext, useState } from 'react';
+import { UserContext } from '../App.jsx'; // ✅ pull context from App
+import { API_BASE_URL } from '../config.js'; // ✅ API URL stays here
+
+
 
 export default function Movies() {
   const { currentUser } = useContext(UserContext)
