@@ -3,27 +3,21 @@
 // =======================
 
 import pkg from 'pg';
-const { Pool } = pkg;
 import dotenv from 'dotenv';
-
-// Load environment variables
 dotenv.config();
 
-// Automatically decide which style to use
-let poolConfig = {};
+const { Pool } = pkg;
 
-if (process.env.DATABASE_URL) {
-  poolConfig = {
-    connectionString: process.env.DATABASE_URL,
-    ssl: {
-      require: true,
-      rejectUnauthorized: false,
-    },
-  };
-}
+// Connection configuration
+const pool = new Pool({
+  connectionString: process.env.DATABASE_URL,
+  ssl: {
+    require: true,
+    rejectUnauthorized: false, // required for Neon on Render
+  },
+});
 
-
-export const pool = new Pool(poolConfig);
+export default pool;
 
 // --- Optional: quick connection test on startup ---
 pool
