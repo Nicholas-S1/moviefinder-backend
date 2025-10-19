@@ -94,14 +94,11 @@ export default function Movies() {
           style={inputStyle}
         />
         <input
-  type="text"
-  inputMode="numeric"
-  placeholder="Min Year"
-  value={minYear}
-  onChange={(e) => setMinYear(e.target.value.replace(/\D/g, ""))}
-  style={inputStyle}
-/>
-
+          type="number"
+          placeholder="Min Year"
+          value={minYear}
+          onChange={(e) => setMinYear(e.target.value)}
+          style={inputStyle}
         />
         <input
           type="number"
