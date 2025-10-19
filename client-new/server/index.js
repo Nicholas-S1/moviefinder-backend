@@ -223,24 +223,22 @@ app.get('/api/users/:id/genres', async (req, res) => {
   const userId = req.params.id;
   try {
     const result = await pool.query(`
-      SELECT g.name AS genre, COUNT(DISTINCT ui.movie_id) AS movies
+      SELECT g.name AS genre, COUNT(DISTINCT ui.movie_id) AS count
       FROM user_interactions ui
       JOIN movie_genres mg ON mg.movie_id = ui.movie_id
       JOIN genres g ON g.genre_id = mg.genre_id
       WHERE ui.user_id = $1
       GROUP BY g.name
-      ORDER BY movies DESC;`,
-      [userId]
-    );
-    res.json({
-      labels: result.rows.map(r => r.genre),
-      data: result.rows.map(r => parseInt(r.movies))
-    });
+      ORDER BY count DESC;
+    `, [userId]);
+
+    res.json(result.rows);
   } catch (err) {
     console.error('Genre stats error:', err.message);
     res.status(500).json({ error: 'Error fetching genre stats' });
   }
 });
+
 
 // =======================
 //  SERVER START

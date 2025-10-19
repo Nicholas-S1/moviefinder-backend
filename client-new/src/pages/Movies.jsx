@@ -22,7 +22,7 @@ export default function Movies() {
 
   const likeMovie = async (movieId) => {
     if (!currentUser) return setMsg('Please log in first.')
-    const res = await fetch(`${API_BASE_URL}/interactions`, {
+    const res = await fetch(`${import.meta.env.VITE_API_URL}/api/interactions`, {
       method: 'POST', headers: {'Content-Type':'application/json'},
       body: JSON.stringify({ user_id: currentUser.user_id, movie_id: movieId, action: 'like' })
     })
@@ -35,7 +35,7 @@ export default function Movies() {
     const input = document.getElementById(`rate-${movieId}`)
     const val = parseFloat(input?.value)
     if (Number.isNaN(val) || val < 0 || val > 10) return setMsg('Enter a rating 0–10')
-    const res = await fetch(`${API_BASE_URL}/interactions`, {
+    const res = await fetch(`${import.meta.env.VITE_API_URL}/api/interactions`, {
       method: 'POST', headers: {'Content-Type':'application/json'},
       body: JSON.stringify({ user_id: currentUser.user_id, movie_id: movieId, action: 'rate', rating: val })
     })
@@ -44,7 +44,7 @@ export default function Movies() {
   }
 
   const getSimilar = async (id) => {
-    const res = await fetch(`${API_BASE_URL}/movies/${id}/similar-by-director`)
+    const res = await fetch(`${import.meta.env.VITE_API_URL}/api/movies/similar/${id}`)
     const data = await res.json()
     setMovies(data)
     setMsg('Showing similar movies by director.')

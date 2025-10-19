@@ -7,7 +7,7 @@ const { Pool } = pkg;
 import dotenv from 'dotenv';
 
 // Load environment variables
-dotenv.config();
+dotenv.config({ path: './.env' });
 
 // Automatically decide which style to use
 let poolConfig = {};
@@ -20,8 +20,9 @@ if (process.env.DATABASE_URL) {
       rejectUnauthorized: false,
     },
   };
+} else {
+  console.error('❌ DATABASE_URL not found in environment!');
 }
-
 
 export const pool = new Pool(poolConfig);
 
