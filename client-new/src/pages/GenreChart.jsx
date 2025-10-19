@@ -1,5 +1,5 @@
 import React, { useContext, useEffect, useRef, useState } from 'react'
-import { API_URL, UserContext } from '../App'
+import { API_BASE_URL, UserContext } from '../App'
 import Chart from 'chart.js/auto'
 
 export default function GenreChart() {
@@ -14,7 +14,7 @@ export default function GenreChart() {
       return
     }
     const load = async () => {
-      const res = await fetch(`${API_URL}/users/${currentUser.user_id}/genres`)
+      const res = await fetch(`${API_BASE_URL}/users/${currentUser.user_id}/genres`)
       const data = await res.json()
       if (chartRef.current) chartRef.current.destroy()
       chartRef.current = new Chart(canvasRef.current, {

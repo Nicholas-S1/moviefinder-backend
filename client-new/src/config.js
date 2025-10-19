@@ -1,7 +1,7 @@
 // src/config.js
 const API_BASE_URL =
   import.meta.env.MODE === 'production'
-    ? 'https://moviefinder-backend-x1ab.onrender.com' // <-- your Render backend URL
-    : 'http://localhost:5000'; // <-- local dev backend
+    ? 'https://moviefinder-backend-1.onrender.com/api' // Render backend
+    : 'http://localhost:5000/api'; // Local dev
 
 export default API_BASE_URL;

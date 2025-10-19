@@ -1,5 +1,5 @@
 import React, { useState } from 'react'
-import { API_URL } from '../App'
+import { API_BASE_URL } from '../config.js'
 import { useNavigate } from 'react-router-dom'
 
 export default function Signup() {
@@ -9,7 +9,7 @@ export default function Signup() {
   const nav = useNavigate()
 
   const submit = async () => {
-    const res = await fetch(`${API_URL}/signup`, {
+    const res = await fetch(`${API_BASE_URL}/signup`, {
       method:'POST', headers:{'Content-Type':'application/json'},
       body: JSON.stringify({ full_name: username, username, password })
     })

@@ -8,7 +8,7 @@ import Login from './pages/Login'
 import Signup from './pages/Signup'
 import GenreChart from './pages/GenreChart'
 
-export const API_URL = 'http://localhost:5000/api'
+
 
 export const UserContext = React.createContext(null)
 

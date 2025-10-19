@@ -1,5 +1,5 @@
 import React, { useContext, useState } from 'react'
-import { API_URL, UserContext } from '../App'
+import { API_BASE_URL, UserContext } from '../config.js'
 
 export default function Movies() {
   const { currentUser } = useContext(UserContext)
@@ -10,7 +10,7 @@ export default function Movies() {
   const [msg, setMsg] = useState('')
 
   const search = async () => {
-    const url = `${API_URL}/movies?q=${encodeURIComponent(q)}&minYear=${minYear}&minRating=${minRating}`
+    const url = `${API_BASE_URL}/movies?q=${encodeURIComponent(q)}&minYear=${minYear}&minRating=${minRating}`
     const res = await fetch(url)
     const data = await res.json()
     setMovies(data)
@@ -18,7 +18,7 @@ export default function Movies() {
 
   const likeMovie = async (movieId) => {
     if (!currentUser) return setMsg('Please log in first.')
-    const res = await fetch(`${API_URL}/interactions`, {
+    const res = await fetch(`${API_BASE_URL}/interactions`, {
       method: 'POST', headers: {'Content-Type':'application/json'},
       body: JSON.stringify({ user_id: currentUser.user_id, movie_id: movieId, action: 'like' })
     })
@@ -31,7 +31,7 @@ export default function Movies() {
     const input = document.getElementById(`rate-${movieId}`)
     const val = parseFloat(input?.value)
     if (Number.isNaN(val) || val < 0 || val > 10) return setMsg('Enter a rating 0–10')
-    const res = await fetch(`${API_URL}/interactions`, {
+    const res = await fetch(`${API_BASE_URL}/interactions`, {
       method: 'POST', headers: {'Content-Type':'application/json'},
       body: JSON.stringify({ user_id: currentUser.user_id, movie_id: movieId, action: 'rate', rating: val })
     })
@@ -40,7 +40,7 @@ export default function Movies() {
   }
 
   const getSimilar = async (id) => {
-    const res = await fetch(`${API_URL}/movies/${id}/similar-by-director`)
+    const res = await fetch(`${API_BASE_URL}/movies/${id}/similar-by-director`)
     const data = await res.json()
     setMovies(data)
     setMsg('Showing similar movies by director.')

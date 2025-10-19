@@ -4,28 +4,18 @@
 
 import express from 'express';
 import cors from 'cors';
-import { pool } from "./db.js";
 import dotenv from 'dotenv';
 import bcrypt from 'bcryptjs';
-import pkg from 'pg';
-const { Pool } = pkg;
+import { pool } from './db.js'; // ✅ Use the shared connection here
 
 // =======================
 //  Environment Setup
 // =======================
-dotenv.config({ path: "../.env" });
+dotenv.config({ path: './.env' });
 
 const app = express();
 app.use(cors());
 app.use(express.json());
-
-// =======================
-//  Database Connection
-// =======================
-const pool = new Pool({
-  connectionString: process.env.DATABASE_URL,
-  ssl: { rejectUnauthorized: false }, // Required for Neon
-});
 
 // Log to confirm environment variables
 console.log('✅ Loaded Environment');

@@ -13,22 +13,15 @@ dotenv.config();
 let poolConfig = {};
 
 if (process.env.DATABASE_URL) {
-  // --- Single string connection (Render / Neon recommended) ---
   poolConfig = {
     connectionString: process.env.DATABASE_URL,
-    ssl: { rejectUnauthorized: false },
-  };
-} else {
-  // --- Fallback: Multi-line local .env variables ---
-  poolConfig = {
-    host: process.env.PGHOST,
-    database: process.env.PGDATABASE,
-    user: process.env.PGUSER,
-    password: process.env.PGPASSWORD,
-    port: process.env.PGPORT || 5432,
-    ssl: { rejectUnauthorized: false },
+    ssl: {
+      require: true,
+      rejectUnauthorized: false,
+    },
   };
 }
+
 
 export const pool = new Pool(poolConfig);
 
