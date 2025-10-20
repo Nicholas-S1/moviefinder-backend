@@ -1,6 +1,6 @@
 import React, { useState, useContext } from "react";
 import { useNavigate } from "react-router-dom";
-import { UserContext } from "../App.jsx"; // ✅ to access global user
+import { UserContext } from "../App.jsx";
 import { API_BASE_URL } from "../config.js";
 
 export default function Signup() {
@@ -8,15 +8,15 @@ export default function Signup() {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [msg, setMsg] = useState("");
-  const { setCurrentUser } = useContext(UserContext); // ✅ add this
-  const navigate = useNavigate(); // ✅ add this
+  const { setCurrentUser } = useContext(UserContext);
+  const navigate = useNavigate();
 
   const handleSignup = async (e) => {
     e.preventDefault();
     setMsg("");
 
     try {
-      const res = await fetch(`${import.meta.env.VITE_API_URL}/api/signup`, {
+      const res = await fetch(`${API_BASE_URL}/api/signup`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
@@ -26,18 +26,17 @@ export default function Signup() {
         }),
       });
 
-      const data = await res.json();
-
-      if (res.ok && data.user_id) {
-        // ✅ Auto-login
-        setCurrentUser(data);
-        navigate("/movies");
-      } else {
-        setMsg(data.error || "Signup failed.");
+      if (!res.ok) {
+        const errData = await res.json();
+        throw new Error(errData.error || "Signup failed");
       }
+
+      const data = await res.json();
+      setCurrentUser(data);
+      navigate("/movies");
     } catch (err) {
-      console.error(err);
-      setMsg("Server error.");
+      console.error("Signup error:", err);
+      setMsg("⚠️ Signup failed. Try again or use a different username.");
     }
   };
 
@@ -47,7 +46,7 @@ export default function Signup() {
       <form onSubmit={handleSignup}>
         <input
           type="text"
-          placeholder="Name"
+          placeholder="Full Name"
           value={name}
           onChange={(e) => setName(e.target.value)}
           required
@@ -68,7 +67,7 @@ export default function Signup() {
         />
         <button type="submit">Sign Up</button>
       </form>
-      {msg && <p className="muted">{msg}</p>}
+      {msg && <p>{msg}</p>}
     </div>
   );
 }
