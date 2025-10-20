@@ -1,64 +1,96 @@
-import React, { useEffect, useState, useContext } from "react";
-import { UserContext } from "../App.jsx";
+import React, { useState, useEffect } from "react";
 import { API_BASE_URL } from "../config.js";
 
 export default function Recommendations() {
-  const { currentUser } = useContext(UserContext);
+  const [movieId, setMovieId] = useState("");
   const [recommendations, setRecommendations] = useState([]);
-  const [msg, setMsg] = useState("");
+  const [error, setError] = useState("");
 
-  useEffect(() => {
-  if (!selectedMovieId) return;
-  fetch(`${API_BASE_URL}/api/movies/${selectedMovieId}/similar-by-director`)
-    .then(res => res.json())
-    .then(setRecommendations)
-    .catch(console.error);
-}, [selectedMovieId]);
+  const fetchRecommendations = async () => {
+    if (!movieId) {
+      setError("Please enter a movie ID first.");
+      return;
+    }
 
-
-    const fetchRecommendations = async () => {
-      try {
-        const res = await fetch(`${import.meta.env.VITE_API_URL}/api/recommendations/${currentUser.user_id}`
-        );
-        if (!res.ok) throw new Error("Failed to fetch recommendations");
-        const data = await res.json();
-        if (!Array.isArray(data) || data.length === 0) {
-          setMsg("No recommendations yet — try liking or rating more movies!");
-        } else {
-          setRecommendations(data);
-        }
-      } catch (err) {
-        console.error(err);
-        setMsg("Could not load recommendations.");
-      }
-    };
-useEffect(() => {
-  if (!currentUser) return;
-  fetchRecommendations();
-}, [currentUser]);
-
+    try {
+      const res = await fetch(`${API_BASE_URL}/api/movies/${movieId}/similar-by-director`);
+      if (!res.ok) throw new Error("Failed to fetch recommendations");
+      const data = await res.json();
+      setRecommendations(data);
+      setError("");
+    } catch (err) {
+      console.error("Error fetching recommendations:", err);
+      setError("Could not load recommendations.");
+    }
+  };
 
   return (
     <div className="page">
-      <h2>🎯 Your Movie Recommendations</h2>
+      <h2>🎬 Movie Recommendations</h2>
 
-      {msg && <p className="muted">{msg}</p>}
+      <form
+        onSubmit={(e) => {
+          e.preventDefault();
+          fetchRecommendations();
+        }}
+        style={formStyle}
+      >
+        <input
+          type="number"
+          placeholder="Enter Movie ID"
+          value={movieId}
+          onChange={(e) => setMovieId(e.target.value)}
+          style={inputStyle}
+        />
+        <button type="submit" style={btnStyle}>
+          Get Recommendations
+        </button>
+      </form>
 
-      {recommendations.length > 0 && (
-        <div className="card-list">
+      {error && <p style={{ color: "red" }}>{error}</p>}
+
+      {recommendations.length > 0 ? (
+        <ul>
           {recommendations.map((m) => (
-            <div className="card" key={m.movie_id}>
-              <b>{m.title}</b> ({m.release_year}) — ⭐ {m.imdb_rating ?? "N/A"}
-              <div className="muted">
-                Genre: {m.genre || m.genres || "Unknown"}
-              </div>
-              <div className="muted">
-                Director: {m.director || "Unknown"}
-              </div>
-            </div>
+            <li key={m.movie_id} style={itemStyle}>
+              <strong>{m.title}</strong> ({m.release_year}) — ⭐ {m.imdb_rating || "N/A"}
+              <p style={{ fontSize: "0.9em", color: "#888" }}>{m.genres || "No genres"}</p>
+            </li>
           ))}
-        </div>
+        </ul>
+      ) : (
+        !error && <p>No recommendations yet. Try a different movie ID.</p>
       )}
     </div>
   );
 }
+
+const formStyle = {
+  display: "flex",
+  gap: "10px",
+  marginBottom: "20px",
+  alignItems: "center",
+};
+
+const inputStyle = {
+  width: "150px",
+  padding: "6px",
+  borderRadius: "4px",
+  border: "1px solid #555",
+  background: "#222",
+  color: "#fff",
+};
+
+const btnStyle = {
+  background: "#3a86ff",
+  color: "#fff",
+  border: "none",
+  padding: "6px 10px",
+  borderRadius: "4px",
+  cursor: "pointer",
+};
+
+const itemStyle = {
+  borderBottom: "1px solid #444",
+  padding: "6px 0",
+};
