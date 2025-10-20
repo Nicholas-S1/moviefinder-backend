@@ -238,26 +238,27 @@ app.get('/api/users/:id/watchlater', async (req, res) => {
 // =======================
 //  REMOVE FROM WATCH LATER
 // =======================
+// =======================
+//  REMOVE FROM WATCH LATER
+// =======================
 app.delete('/api/users/:id/watchlater/:movieId', async (req, res) => {
-  const { id, movieId } = req.params;
+  const userId = req.params.id;
+  const movieId = req.params.movieId;
 
   try {
-    const result = await pool.query(
+    await pool.query(
       `DELETE FROM user_interactions
-       WHERE user_id = $1 AND movie_id = $2 AND action = 'watch_later'`,
-      [id, movieId]
+       WHERE user_id = $1 AND movie_id = $2 AND action = 'watch_later';`,
+      [userId, movieId]
     );
-
-    if (result.rowCount === 0) {
-      return res.status(404).json({ error: 'Movie not found in Watch Later' });
-    }
 
     res.json({ success: true });
   } catch (err) {
-    console.error('❌ Watch later delete error:', err.message);
-    res.status(500).json({ error: 'Failed to remove movie from Watch Later' });
+    console.error('Remove watch later error:', err.message);
+    res.status(500).json({ error: 'Could not remove movie from watch-later list' });
   }
 });
+
 
 
 // =======================
