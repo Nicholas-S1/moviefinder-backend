@@ -153,6 +153,56 @@ app.get('/api/movies/:id/similar-by-director', async (req, res) => {
 });
 
 // =======================
+// 🎬 RECOMMENDATIONS BY MOVIE TITLE
+// =======================
+app.get('/api/recommendations/by-title/:title', async (req, res) => {
+  const { title } = req.params;
+
+  try {
+    // Step 1: Find the movie ID for the given title
+    const movieResult = await pool.query(
+      `SELECT movie_id FROM movies WHERE LOWER(title) = LOWER($1) LIMIT 1;`,
+      [title]
+    );
+
+    if (movieResult.rows.length === 0) {
+      return res.status(404).json({ error: 'Movie not found' });
+    }
+
+    const movieId = movieResult.rows[0].movie_id;
+
+    // Step 2: Find recommendations by the same director
+    const query = `
+      WITH seed AS (SELECT $1::BIGINT AS movie_id),
+      dirs AS (
+        SELECT mp.person_id
+        FROM movie_people mp
+        JOIN roles r ON r.role_id = mp.role_id AND r.name = 'Director'
+        JOIN seed s ON s.movie_id = mp.movie_id
+      )
+      SELECT 
+        m.movie_id,
+        m.title,
+        m.release_year,
+        m.imdb_rating,
+        COALESCE(STRING_AGG(DISTINCT g.name, ', ' ORDER BY g.name), '') AS genres
+      FROM movies m
+      JOIN movie_people mp ON mp.movie_id = m.movie_id
+      JOIN roles r ON r.role_id = mp.role_id AND r.name = 'Director'
+      LEFT JOIN movie_genres mg ON mg.movie_id = m.movie_id
+      LEFT JOIN genres g ON g.genre_id = mg.genre_id
+      WHERE mp.person_id IN (SELECT person_id FROM dirs)
+        AND m.movie_id <> $1
+      GROUP BY m.movie_id, m.title, m.release_year, m.imdb_rating
+      ORDER BY m.imdb_rating DESC NULLS LAST, m.release_year DESC
+      LIMIT 20;
+    `;
+
+    const result = await pool.query(query, [movieId]);
+    res.json(result.rows);
+  } catch (err)
+
+// =======================
 //  USER AUTH
 // =======================
 

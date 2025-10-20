@@ -1,19 +1,21 @@
-import React, { useState, useEffect } from "react";
+import React, { useState } from "react";
 import { API_BASE_URL } from "../config.js";
 
 export default function Recommendations() {
-  const [movieId, setMovieId] = useState("");
+  const [title, setTitle] = useState("");
   const [recommendations, setRecommendations] = useState([]);
   const [error, setError] = useState("");
 
   const fetchRecommendations = async () => {
-    if (!movieId) {
-      setError("Please enter a movie ID first.");
+    if (!title.trim()) {
+      setError("Please enter a movie title first.");
       return;
     }
 
     try {
-      const res = await fetch(`${API_BASE_URL}/api/movies/${movieId}/similar-by-director`);
+      const res = await fetch(
+        `${API_BASE_URL}/api/recommendations/by-title/${encodeURIComponent(title)}`
+      );
       if (!res.ok) throw new Error("Failed to fetch recommendations");
       const data = await res.json();
       setRecommendations(data);
@@ -26,7 +28,7 @@ export default function Recommendations() {
 
   return (
     <div className="page">
-      <h2>🎬 Movie Recommendations</h2>
+      <h2>🎬 Movie Recommendations (by Director)</h2>
 
       <form
         onSubmit={(e) => {
@@ -36,10 +38,10 @@ export default function Recommendations() {
         style={formStyle}
       >
         <input
-          type="number"
-          placeholder="Enter Movie ID"
-          value={movieId}
-          onChange={(e) => setMovieId(e.target.value)}
+          type="text"
+          placeholder="Enter Movie Title..."
+          value={title}
+          onChange={(e) => setTitle(e.target.value)}
           style={inputStyle}
         />
         <button type="submit" style={btnStyle}>
@@ -50,16 +52,16 @@ export default function Recommendations() {
       {error && <p style={{ color: "red" }}>{error}</p>}
 
       {recommendations.length > 0 ? (
-        <ul>
+        <ul style={{ listStyle: "none", padding: 0 }}>
           {recommendations.map((m) => (
             <li key={m.movie_id} style={itemStyle}>
               <strong>{m.title}</strong> ({m.release_year}) — ⭐ {m.imdb_rating || "N/A"}
-              <p style={{ fontSize: "0.9em", color: "#888" }}>{m.genres || "No genres"}</p>
+              <p style={{ fontSize: "0.9em", color: "#888" }}>{m.genres || "No genres listed"}</p>
             </li>
           ))}
         </ul>
       ) : (
-        !error && <p>No recommendations yet. Try a different movie ID.</p>
+        !error && <p>No recommendations found yet. Try another title.</p>
       )}
     </div>
   );
@@ -73,7 +75,7 @@ const formStyle = {
 };
 
 const inputStyle = {
-  width: "150px",
+  width: "250px",
   padding: "6px",
   borderRadius: "4px",
   border: "1px solid #555",
