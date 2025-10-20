@@ -8,10 +8,13 @@ export default function Recommendations() {
   const [msg, setMsg] = useState("");
 
   useEffect(() => {
-    if (!currentUser) {
-      setMsg("Please log in to view your recommendations.");
-      return;
-    }
+  if (!selectedMovieId) return;
+  fetch(`${API_BASE_URL}/api/movies/${selectedMovieId}/similar-by-director`)
+    .then(res => res.json())
+    .then(setRecommendations)
+    .catch(console.error);
+}, [selectedMovieId]);
+
 
     const fetchRecommendations = async () => {
       try {

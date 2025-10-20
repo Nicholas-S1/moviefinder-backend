@@ -217,6 +217,50 @@ app.post('/api/interactions', async (req, res) => {
 });
 
 // =======================
+//  WATCH LATER FETCH
+// =======================
+app.get('/api/users/:id/watchlater', async (req, res) => {
+  const userId = req.params.id;
+  try {
+    const result = await pool.query(`
+      SELECT m.movie_id, m.title, m.release_year, m.imdb_rating
+      FROM user_interactions ui
+      JOIN movies m ON m.movie_id = ui.movie_id
+      WHERE ui.user_id = $1 AND ui.action = 'watch_later'
+      ORDER BY ui.occurred_at DESC;
+    `, [userId]);
+    res.json(result.rows);
+  } catch (err) {
+    console.error('Watch later fetch error:', err.message);
+    res.status(500).json({ error: 'Error fetching watch-later list' });
+  }
+});
+// =======================
+//  REMOVE FROM WATCH LATER
+// =======================
+app.delete('/api/users/:id/watchlater/:movieId', async (req, res) => {
+  const { id, movieId } = req.params;
+
+  try {
+    const result = await pool.query(
+      `DELETE FROM user_interactions
+       WHERE user_id = $1 AND movie_id = $2 AND action = 'watch_later'`,
+      [id, movieId]
+    );
+
+    if (result.rowCount === 0) {
+      return res.status(404).json({ error: 'Movie not found in Watch Later' });
+    }
+
+    res.json({ success: true });
+  } catch (err) {
+    console.error('❌ Watch later delete error:', err.message);
+    res.status(500).json({ error: 'Failed to remove movie from Watch Later' });
+  }
+});
+
+
+// =======================
 //  GENRE CHART (deduped)
 // =======================
 app.get('/api/users/:id/genres', async (req, res) => {

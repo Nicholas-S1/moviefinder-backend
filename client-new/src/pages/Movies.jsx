@@ -63,17 +63,18 @@ export default function Movies() {
 
   // 🎥 Handle watch-later
   const handleWatchLater = async (movieId) => {
-    if (!currentUser) return alert("Log in to save movies");
-    await fetch(`${API_BASE_URL}/watchlater`, {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({
-        user_id: currentUser.user_id,
-        movie_id: movieId,
-      }),
-    });
-    alert("🎥 Added to Watch Later!");
-  };
+  if (!currentUser) return alert("Log in to save movies");
+  await fetch(`${API_BASE_URL}/api/interactions`, {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({
+      user_id: currentUser.user_id,
+      movie_id: movieId,
+      action: "watch_later",   // 👈 add this field
+    }),
+  });
+  alert("🎥 Added to Watch Later!");
+};
 
   // 🧭 Handle search
   const handleSearch = (e) => {
