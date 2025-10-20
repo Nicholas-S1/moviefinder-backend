@@ -32,9 +32,11 @@ export default function Recommendations() {
         setMsg("Could not load recommendations.");
       }
     };
+useEffect(() => {
+  if (!currentUser) return;
+  fetchRecommendations();
+}, [currentUser]);
 
-    fetchRecommendations();
-  }, [currentUser]);
 
   return (
     <div className="page">
