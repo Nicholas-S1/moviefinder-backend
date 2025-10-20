@@ -33,9 +33,9 @@ export default function Movies() {
   // 🎬 Fetch movies (with optional filters)
   const fetchMovies = async () => {
     try {
-      const url = `${API_BASE_URL}/movies?q=${encodeURIComponent(
-        q
-      )}&minYear=${minYear}&minRating=${minRating}`;
+      const url = `${API_BASE_URL}/api/movies?q=${encodeURIComponent(
+      q
+      )}&minYear=${minYear}&minRating=${minRating}`;  
       const res = await fetch(url);
       const data = await res.json();
       setMovies(data);
