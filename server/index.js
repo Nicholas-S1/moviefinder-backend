@@ -155,13 +155,16 @@ app.get('/api/movies/:id/similar-by-director', async (req, res) => {
 // =======================
 // 🎬 RECOMMENDATIONS BY MOVIE TITLE
 // =======================
+// =======================
+//  RECOMMENDATIONS BY TITLE
+// =======================
 app.get('/api/recommendations/by-title/:title', async (req, res) => {
-  const { title } = req.params;
-
   try {
-    // Step 1: Find the movie ID for the given title
+    const { title } = req.params;
+
+    // Step 1: Find the movie by title
     const movieResult = await pool.query(
-      `SELECT movie_id FROM movies WHERE LOWER(title) = LOWER($1) LIMIT 1;`,
+      `SELECT movie_id FROM movies WHERE title ILIKE $1 LIMIT 1;`,
       [title]
     );
 
@@ -200,7 +203,12 @@ app.get('/api/recommendations/by-title/:title', async (req, res) => {
 
     const result = await pool.query(query, [movieId]);
     res.json(result.rows);
-  } catch (err)
+
+  } catch (err) {
+    console.error('Recommendation error:', err.message);
+    res.status(500).json({ error: 'Server error fetching recommendations' });
+  }
+});
 
 // =======================
 //  USER AUTH
@@ -222,7 +230,7 @@ app.post('/api/signup', async (req, res) => {
     console.error('Signup error:', err.message);
     res.status(400).json({ error: 'Username already exists or invalid data' });
   }
-});
+}); 
 
 // LOGIN
 app.post('/api/login', async (req, res) => {
