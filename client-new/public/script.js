@@ -1,6 +1,7 @@
+import { API_BASE_URL } from "../config";
 async function search() {
   const q = document.getElementById('search').value;
-  const res = await fetch(`http://localhost:5000/api/movies?q=${encodeURIComponent(q)}`);
+  const res = await fetch(`${API_BASE_URL}/api/movies?q=${encodeURIComponent(q)}`);
   const movies = await res.json();
   const list = document.getElementById('results');
   list.innerHTML = '';
@@ -13,7 +14,7 @@ async function search() {
 
 
 async function load(userId) {
-  const res = await fetch(`http://localhost:5000/api/users/${userId}/genres`);
+  const res = await fetch(`${API_BASE_URL}/api/users/${userId}/genres`);
   const json = await res.json();
 
   new Chart(document.getElementById(''), {
