@@ -20,7 +20,7 @@ export default function Account() {
     );
   }
 
-  // 🧱 Update name / username
+  // Update name / username
   const handleUpdateProfile = async (e) => {
     e.preventDefault();
     try {
@@ -46,7 +46,7 @@ export default function Account() {
     }
   };
 
-  // 🔒 Change password
+  //  Change password
   const handleChangePassword = async (e) => {
     e.preventDefault();
     try {
@@ -62,7 +62,7 @@ export default function Account() {
     }
   };
 
-  // 🗑️ Delete account
+  //  Delete account
   const handleDeleteAccount = async () => {
     if (!window.confirm("Are you sure you want to delete your account?")) return;
     try {
@@ -139,7 +139,7 @@ export default function Account() {
   );
 }
 
-// 💅 Inline dark theme styles
+// Inline dark theme styles
 const pageStyle = {
   backgroundColor: "#222",
   color: "#fff",

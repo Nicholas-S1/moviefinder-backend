@@ -2,7 +2,7 @@
 import axios from "axios";
 import { useState, useContext } from "react";
 import { useNavigate } from "react-router-dom";
-import UserContext from "../context/userContext"; // make sure this casing matches the actual file
+import UserContext from "../context/userContext"; 
 import { API_BASE_URL } from "../config";
 
 function Login() {

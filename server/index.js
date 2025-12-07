@@ -136,7 +136,7 @@ app.put("/api/users/:id", async (req, res) => {
 });
 
 
-// 🔹 2. Change password
+//  Change password
 app.put("/api/users/:id/password", async (req, res) => {
   const { id } = req.params;
   const { currentPassword, newPassword } = req.body;
@@ -170,15 +170,15 @@ app.put("/api/users/:id/password", async (req, res) => {
 });
 
 
-// 🔹 3. Delete account (and related data)
+// Delete account (and related data)
 app.delete("/api/users/:id", async (req, res) => {
   const { id } = req.params;
 
   try {
-    // Optionally, delete related interactions first
+    
     await pool.query("DELETE FROM user_interactions WHERE user_id = $1", [id]);
 
-    // Delete the user
+  
     const result = await pool.query("DELETE FROM users WHERE user_id = $1", [id]);
     if (result.rowCount === 0)
       return res.status(404).json({ error: "User not found" });
@@ -212,7 +212,7 @@ app.get("/api/interactions", async (req, res) => {
 
 
 
-// ✅ Record or update a user interaction (rating, watch later, etc.)
+// Record or update a user interaction (rating, watch later, etc.)
 app.post("/api/interactions", async (req, res) => {
   const { user_id, movie_id, action, rating } = req.body;
 
@@ -258,7 +258,7 @@ app.post("/api/interactions", async (req, res) => {
 });
 
 
-// ✅ Fetch a user's existing ratings
+// Fetch a user's existing ratings
 app.get("/api/users/:id/ratings", async (req, res) => {
   const userId = req.params.id;
 

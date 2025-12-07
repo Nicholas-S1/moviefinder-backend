@@ -8,7 +8,7 @@ export default function NavBar() {
   const { currentUser, setCurrentUser } = useContext(UserContext);
   const navigate = useNavigate();
 
-  // ✅ Logout handler clears state and storage
+  // Logout handler clears state and storage
   const handleLogout = () => {
     setCurrentUser(null);
     localStorage.removeItem("movieFinderUser");

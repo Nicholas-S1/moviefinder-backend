@@ -2,7 +2,7 @@ import React, { useState, useEffect } from "react";
 import { API_BASE_URL } from "../config";
 
 function Recommendations() {
-  // 🔹 Get the logged-in user from localStorage
+  //  Get the logged-in user from localStorage
   let parsedUser = null;
   const stored =
     localStorage.getItem("movieFinderUser") ||
@@ -18,13 +18,13 @@ function Recommendations() {
 
   const userId = parsedUser?.user_id;
 
-  // 🔹 State
+  // State
   const [recommendations, setRecommendations] = useState([]);
   const [type, setType] = useState("genre");
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
 
-  // 🔹 Fetch recommendations whenever userId or type changes
+  //  Fetch recommendations whenever userId or type changes
   useEffect(() => {
     if (!userId) {
       setError("Please log in to see recommendations.");
@@ -37,7 +37,7 @@ function Recommendations() {
       setLoading(true);
       try {
         console.log(
-          `🎬 Fetching recommendations for user ${userId}, type: ${type}`
+          ` Fetching recommendations for user ${userId}, type: ${type}`
         );
 
         const res = await fetch(
@@ -70,7 +70,7 @@ function Recommendations() {
     fetchRecommendations();
   }, [userId, type]);
 
-  // 🔹 Render
+  //  Render
   return (
     <div className="text-white p-6">
       <h2 className="text-2xl font-bold mb-4">Recommended Movies</h2>

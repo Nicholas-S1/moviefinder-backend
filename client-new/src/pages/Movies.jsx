@@ -5,7 +5,7 @@ import { API_BASE_URL } from "../config.js";
 export default function Movies() {
   const { currentUser } = useContext(UserContext);
 
-  // 🎬 State management
+  // State management
   const [movies, setMovies] = useState([]);
   const [userRatings, setUserRatings] = useState({});
   const [q, setQ] = useState("");
@@ -34,7 +34,7 @@ export default function Movies() {
 }, [currentUser]);
 
 
-  // 🎬 Fetch movies (with optional filters)
+  //  Fetch movies (with optional filters)
   const fetchMovies = async () => {
     try {
       const url = `${API_BASE_URL}/api/movies?q=${encodeURIComponent(q)}&minYear=${minYear}&minRating=${minRating}`;
@@ -46,7 +46,7 @@ export default function Movies() {
     }
   };
 
-  // ⭐ Handle rating submission
+  //  Handle rating submission
   const handleRate = async (movieId, rating) => {
   if (!currentUser) return alert("Please log in to rate movies");
   if (!rating || rating < 0 || rating > 10)
@@ -67,11 +67,11 @@ export default function Movies() {
     const data = await res.json();
 
     if (data.alreadyRated) {
-      alert("⚠️ You already rated this movie with the same rating!");
+      alert(" You already rated this movie with the same rating!");
     } else if (data.updated) {
-      alert("⭐ Your rating was updated!");
+      alert(" Your rating was updated!");
     } else if (data.created) {
-      alert("✅ New rating saved!");
+      alert(" New rating saved!");
     } else {
       alert(data.message || "❌ Something went wrong.");
     }
@@ -83,7 +83,7 @@ export default function Movies() {
 
 
 
-  // 🎥 Handle watch-later
+  //  Handle watch-later
   const handleWatchLater = async (movieId) => {
     if (!currentUser) return alert("Log in to save movies");
     await fetch(`${API_BASE_URL}/api/interactions`, {
@@ -95,10 +95,10 @@ export default function Movies() {
         action: "watch_later",
       }),
     });
-    alert("🎥 Added to Watch Later!");
+    alert(" Added to Watch Later!");
   };
 
-  // 🧭 Handle search
+  //  Handle search
   const handleSearch = (e) => {
     e.preventDefault();
     fetchMovies();
@@ -108,7 +108,7 @@ export default function Movies() {
     <div className="page">
       <h2>Search Movies</h2>
 
-      {/* 🔍 Search Bar */}
+      {/*  Search Bar */}
       <form onSubmit={handleSearch} style={searchStyle}>
         <input
           placeholder="Title..."
@@ -137,7 +137,7 @@ export default function Movies() {
         </button>
       </form>
 
-      {/* 🎬 Movie List */}
+      {/*  Movie List */}
       {movies.length === 0 ? (
         <p>No movies found.</p>
       ) : (
@@ -193,7 +193,7 @@ export default function Movies() {
   );
 }
 
-// 💅 Inline Styles
+// Inline Styles
 const cardStyle = {
   display: "flex",
   justifyContent: "space-between",
