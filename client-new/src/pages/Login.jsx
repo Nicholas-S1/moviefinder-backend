@@ -1,50 +1,65 @@
-import React, { useState, useContext } from "react";
+import axios from "axios";
+import { useState, useContext } from "react";
 import { useNavigate } from "react-router-dom";
-import { UserContext } from "../App.jsx";
+import UserContext from "../context/UserContext";
 
-export default function Login() {
-  const { setCurrentUser } = useContext(UserContext);
-  const [email, setEmail] = useState("");
+function Login() {
+  const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
-  const [msg, setMsg] = useState("");
+  const [error, setError] = useState(null);
   const navigate = useNavigate();
+  const { setCurrentUser } = useContext(UserContext);
 
   const handleLogin = async (e) => {
     e.preventDefault();
-    setMsg("");
+    setError("");
 
     try {
-      const res = await fetch(`${import.meta.env.VITE_API_URL}/api/login`, {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          username: email, // ✅ matches backend field name
-          password,
-        }),
+      const res = await axios.post("http://localhost:5000/api/login", {
+        username,
+        password,
       });
 
-      const data = await res.json();
-      if (res.ok && data.user_id) {
-        setCurrentUser(data);
-        navigate("/movies");
+      console.log("📡 Login response:", res.data);
+
+      if (res.data && (res.data.user_id || res.data.id_user)) {
+        const userData = {
+          user_id: res.data.user_id || res.data.id_user,
+          username: res.data.username,
+          full_name: res.data.full_name,
+        };
+
+        localStorage.setItem("movieFinderUser", JSON.stringify(userData));
+        console.log("✅ User saved to localStorage:", userData);
+
+        if (setCurrentUser) {
+          setCurrentUser(userData);
+        }
+
+        console.log("🎯 Current user context set:", userData);
+        navigate("/recommendations");
       } else {
-        setMsg(data.error || "Invalid login credentials");
+        setError("Unexpected login response.");
       }
     } catch (err) {
-      console.error(err);
-      setMsg("Server error");
+      console.error("❌ Login failed:", err);
+      if (err.response) {
+        setError(err.response.data.error || "Invalid credentials");
+      } else {
+        setError("Cannot reach backend — check URL or server status");
+      }
     }
   };
 
   return (
-    <div className="page">
+    <div className="login-page">
       <h2>Login</h2>
       <form onSubmit={handleLogin}>
         <input
-          type="email"
-          placeholder="Email"
-          value={email}
-          onChange={(e) => setEmail(e.target.value)}
+          type="text"
+          placeholder="Username or Email"
+          value={username}
+          onChange={(e) => setUsername(e.target.value)}
           required
         />
         <input
@@ -56,7 +71,9 @@ export default function Login() {
         />
         <button type="submit">Login</button>
       </form>
-      {msg && <p className="muted">{msg}</p>}
+      {error && <p style={{ color: "red" }}>{error}</p>}
     </div>
   );
 }
+
+export default Login;

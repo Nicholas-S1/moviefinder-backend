@@ -1,4 +1,15 @@
 /* 🌙 Dark Mode Theme */
+/* DEBUG: Force visible background/text */
+body, #root {
+  background-color: #111 !important;
+  color: white !important;
+  min-height: 100vh;
+}
+
+a, button, h1, h2, h3, h4, h5, h6, p, span {
+  color: white !important;
+}
+
 body {
   margin: 0;
   font-family: "Inter", sans-serif;

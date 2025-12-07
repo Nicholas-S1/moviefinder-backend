@@ -1,98 +1,125 @@
-import React, { useState } from "react";
-import { API_BASE_URL } from "../config.js";
+import React, { useState, useEffect } from "react";
+import { API_BASE_URL } from "../config";
 
-export default function Recommendations() {
-  const [title, setTitle] = useState("");
+function Recommendations() {
+  // 🔹 Get the logged-in user from localStorage
+  let parsedUser = null;
+  const stored =
+    localStorage.getItem("movieFinderUser") ||
+    localStorage.getItem("currentUser");
+
+  if (stored) {
+    try {
+      parsedUser = JSON.parse(stored);
+    } catch (e) {
+      console.error("Failed to parse stored user:", e);
+    }
+  }
+
+  const userId = parsedUser?.user_id;
+
+  // 🔹 State
   const [recommendations, setRecommendations] = useState([]);
-  const [error, setError] = useState("");
+  const [type, setType] = useState("genre");
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
 
-  const fetchRecommendations = async () => {
-    if (!title.trim()) {
-      setError("Please enter a movie title first.");
+  // 🔹 Fetch recommendations whenever userId or type changes
+  useEffect(() => {
+    if (!userId) {
+      setError("Please log in to see recommendations.");
+      setLoading(false);
+      setRecommendations([]);
       return;
     }
 
-    try {
-      const res = await fetch(
-        `${API_BASE_URL}/api/recommendations/by-title/${encodeURIComponent(title)}`
-      );
-      if (!res.ok) throw new Error("Failed to fetch recommendations");
-      const data = await res.json();
-      setRecommendations(data);
-      setError("");
-    } catch (err) {
-      console.error("Error fetching recommendations:", err);
-      setError("Could not load recommendations.");
-    }
-  };
+    const fetchRecommendations = async () => {
+      setLoading(true);
+      try {
+        console.log(
+          `🎬 Fetching recommendations for user ${userId}, type: ${type}`
+        );
 
+        const res = await fetch(
+          `${API_BASE_URL}/api/recommendations/${userId}?type=${type}`
+        );
+
+        const data = await res.json();
+
+        if (!res.ok) {
+          throw new Error(data.error || "Failed to fetch recommendations");
+        }
+
+        if (!Array.isArray(data)) {
+          console.warn("Recommendations response was not an array:", data);
+          setRecommendations([]);
+        } else {
+          setRecommendations(data);
+        }
+
+        setError(null);
+      } catch (err) {
+        console.error("Recommendation fetch error:", err);
+        setError("Failed to load recommendations");
+        setRecommendations([]);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchRecommendations();
+  }, [userId, type]);
+
+  // 🔹 Render
   return (
-    <div className="page">
-      <h2>🎬 Movie Recommendations (by Director)</h2>
+    <div className="text-white p-6">
+      <h2 className="text-2xl font-bold mb-4">Recommended Movies</h2>
 
-      <form
-        onSubmit={(e) => {
-          e.preventDefault();
-          fetchRecommendations();
-        }}
-        style={formStyle}
-      >
-        <input
-          type="text"
-          placeholder="Enter Movie Title..."
-          value={title}
-          onChange={(e) => setTitle(e.target.value)}
-          style={inputStyle}
-        />
-        <button type="submit" style={btnStyle}>
-          Get Recommendations
-        </button>
-      </form>
+      <div className="mb-4">
+        <label className="mr-2">Recommendation Type:</label>
+        <select
+          value={type}
+          onChange={(e) => setType(e.target.value)}
+          className="bg-gray-800 p-2 rounded text-white"
+        >
+          <option value="genre">🎬 Based on Favorite Genres</option>
+          <option value="director">
+            🎥 Based on Favorite Favorites (Director tab)
+          </option>
+          <option value="top">🏆 Top Rated Movies</option>
+        </select>
+      </div>
 
-      {error && <p style={{ color: "red" }}>{error}</p>}
-
-      {recommendations.length > 0 ? (
-        <ul style={{ listStyle: "none", padding: 0 }}>
-          {recommendations.map((m) => (
-            <li key={m.movie_id} style={itemStyle}>
-              <strong>{m.title}</strong> ({m.release_year}) — ⭐ {m.imdb_rating || "N/A"}
-              <p style={{ fontSize: "0.9em", color: "#888" }}>{m.genres || "No genres listed"}</p>
+      {loading ? (
+        <p>Loading recommendations...</p>
+      ) : error ? (
+        <p className="text-red-400">{error}</p>
+      ) : recommendations.length === 0 ? (
+        <p>No recommendations yet. Try rating a few movies!</p>
+      ) : (
+        <ul className="space-y-2">
+          {recommendations.map((movie) => (
+            <li
+              key={movie.movie_id}
+              className="bg-gray-900 p-3 rounded shadow-md hover:bg-gray-800"
+            >
+              <span className="font-semibold">{movie.title}</span>{" "}
+              {movie.release_year && `(${movie.release_year})`} — ⭐{" "}
+              {movie.imdb_rating ?? "N/A"}
+              {movie.genres && (
+                <p className="text-gray-400 text-sm">{movie.genres}</p>
+              )}
+              {movie.director && (
+                <p className="text-gray-400 text-sm">
+                  🎥 Directed by {movie.director}
+                </p>
+              )}
             </li>
           ))}
         </ul>
-      ) : (
-        !error && <p>No recommendations found yet. Try another title.</p>
       )}
     </div>
   );
 }
 
-const formStyle = {
-  display: "flex",
-  gap: "10px",
-  marginBottom: "20px",
-  alignItems: "center",
-};
-
-const inputStyle = {
-  width: "250px",
-  padding: "6px",
-  borderRadius: "4px",
-  border: "1px solid #555",
-  background: "#222",
-  color: "#fff",
-};
-
-const btnStyle = {
-  background: "#3a86ff",
-  color: "#fff",
-  border: "none",
-  padding: "6px 10px",
-  borderRadius: "4px",
-  cursor: "pointer",
-};
-
-const itemStyle = {
-  borderBottom: "1px solid #444",
-  padding: "6px 0",
-};
+export default Recommendations;

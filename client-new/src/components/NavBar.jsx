@@ -1,6 +1,8 @@
 import React, { useContext } from "react";
 import { Link, useNavigate } from "react-router-dom";
-import { UserContext } from "../App.jsx";
+import UserContext from "../context/userContext";
+
+console.log("✅ NavBar loaded");
 
 export default function NavBar() {
   const { currentUser, setCurrentUser } = useContext(UserContext);
@@ -9,7 +11,7 @@ export default function NavBar() {
   // ✅ Logout handler clears state and storage
   const handleLogout = () => {
     setCurrentUser(null);
-    localStorage.removeItem("movieFinderUser"); // clears stored login
+    localStorage.removeItem("movieFinderUser");
     navigate("/login");
   };
 
@@ -30,15 +32,15 @@ export default function NavBar() {
         <Link to="/movies" style={linkStyle}>Movies</Link>
         <Link to="/watchlater" style={linkStyle}>Watch Later</Link>
         <Link to="/recommendations" style={linkStyle}>Recommendations</Link>
+        <Link to="/chart" style={linkStyle}>Chart</Link>
       </div>
 
       {/* Right side — user / auth controls */}
       <div style={{ display: "flex", gap: "12px" }}>
         {currentUser ? (
           <>
-            <span style={{ color: "#aaa" }}>
-              Welcome, {currentUser.username}
-            </span>
+            <Link to="/account" style={linkStyle}>Account</Link>
+            <span style={{ color: "#aaa" }}>Welcome, {currentUser.username}</span>
             <button
               onClick={handleLogout}
               style={{

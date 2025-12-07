@@ -1,11 +1,11 @@
 import React, { useContext, useEffect, useState } from "react";
-import { UserContext } from "../App.jsx";
+import UserContext from "../context/userContext";
 import { API_BASE_URL } from "../config.js";
 
 export default function Movies() {
   const { currentUser } = useContext(UserContext);
 
-  // State for movies, ratings, and search filters
+  // 🎬 State management
   const [movies, setMovies] = useState([]);
   const [userRatings, setUserRatings] = useState({});
   const [q, setQ] = useState("");
@@ -18,24 +18,26 @@ export default function Movies() {
   }, []);
 
   // Fetch existing ratings if logged in
-  useEffect(() => {
-    if (!currentUser) return;
-    fetch(`${API_BASE_URL}/users/${currentUser.user_id}/ratings`)
-      .then((res) => res.json())
-      .then((data) => {
-        const map = {};
-        data.forEach((r) => (map[r.movie_id] = r.rating));
-        setUserRatings(map);
-      })
-      .catch(console.error);
-  }, [currentUser]);
+ useEffect(() => {
+  if (!currentUser) return;
+
+  fetch(`${API_BASE_URL}/api/interactions?user_id=${currentUser.user_id}&action=rate`)
+    .then((res) => res.json())
+    .then((data) => {
+      const map = {};
+      data.forEach((r) => {
+        map[r.movie_id] = r.rating;
+      });
+      setUserRatings(map);
+    })
+    .catch(console.error);
+}, [currentUser]);
+
 
   // 🎬 Fetch movies (with optional filters)
   const fetchMovies = async () => {
     try {
-      const url = `${API_BASE_URL}/api/movies?q=${encodeURIComponent(
-      q
-      )}&minYear=${minYear}&minRating=${minRating}`;  
+      const url = `${API_BASE_URL}/api/movies?q=${encodeURIComponent(q)}&minYear=${minYear}&minRating=${minRating}`;
       const res = await fetch(url);
       const data = await res.json();
       setMovies(data);
@@ -46,35 +48,55 @@ export default function Movies() {
 
   // ⭐ Handle rating submission
   const handleRate = async (movieId, rating) => {
-    if (!currentUser) return alert("Log in to rate movies");
+  if (!currentUser) return alert("Please log in to rate movies");
+  if (!rating || rating < 0 || rating > 10)
+    return alert("Enter a valid rating (0–10)");
 
-    setUserRatings((prev) => ({ ...prev, [movieId]: rating })); // instant UI update
-
-    await fetch(`${API_BASE_URL}/rate`, {
+  try {
+    const res = await fetch(`${API_BASE_URL}/api/interactions`, {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({
         user_id: currentUser.user_id,
         movie_id: movieId,
-        rating,
+        action: "rate",
+        rating: parseFloat(rating),
       }),
     });
-  };
+
+    const data = await res.json();
+
+    if (data.alreadyRated) {
+      alert("⚠️ You already rated this movie with the same rating!");
+    } else if (data.updated) {
+      alert("⭐ Your rating was updated!");
+    } else if (data.created) {
+      alert("✅ New rating saved!");
+    } else {
+      alert(data.message || "❌ Something went wrong.");
+    }
+  } catch (err) {
+    console.error("Error saving rating:", err);
+  }
+};
+
+
+
 
   // 🎥 Handle watch-later
   const handleWatchLater = async (movieId) => {
-  if (!currentUser) return alert("Log in to save movies");
-  await fetch(`${API_BASE_URL}/api/interactions`, {
-    method: "POST",
-    headers: { "Content-Type": "application/json" },
-    body: JSON.stringify({
-      user_id: currentUser.user_id,
-      movie_id: movieId,
-      action: "watch_later",   // 👈 add this field
-    }),
-  });
-  alert("🎥 Added to Watch Later!");
-};
+    if (!currentUser) return alert("Log in to save movies");
+    await fetch(`${API_BASE_URL}/api/interactions`, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({
+        user_id: currentUser.user_id,
+        movie_id: movieId,
+        action: "watch_later",
+      }),
+    });
+    alert("🎥 Added to Watch Later!");
+  };
 
   // 🧭 Handle search
   const handleSearch = (e) => {
@@ -95,14 +117,12 @@ export default function Movies() {
           style={inputStyle}
         />
         <input
-  type="text"
-  inputMode="numeric"
-  placeholder="Min Year"
-  value={minYear}
-  onChange={(e) => setMinYear(e.target.value.replace(/\D/g, ""))}
-  style={inputStyle}
-
-
+          type="text"
+          inputMode="numeric"
+          placeholder="Min Year"
+          value={minYear}
+          onChange={(e) => setMinYear(e.target.value.replace(/\D/g, ""))}
+          style={inputStyle}
         />
         <input
           type="number"
@@ -121,15 +141,15 @@ export default function Movies() {
       {movies.length === 0 ? (
         <p>No movies found.</p>
       ) : (
-        movies.map((m) => (
-          <div key={m.movie_id} className="movie-card" style={cardStyle}>
+        movies.map((movie) => (
+          <div key={movie.movie_id} className="movie-card" style={cardStyle}>
             <div>
-              <h3>{m.title}</h3>
+              <h3>{movie.title}</h3>
               <p>
-                {m.release_year} — ⭐ {m.imdb_rating || "N/A"}
+                {movie.release_year} — ⭐ {movie.imdb_rating || "N/A"}
               </p>
               <p style={{ fontSize: "0.9em", color: "#888" }}>
-                {m.genre || "No genre listed"}
+                {movie.genre || "No genre listed"}
               </p>
             </div>
 
@@ -140,13 +160,26 @@ export default function Movies() {
                   min="0"
                   max="10"
                   step="0.5"
-                  value={userRatings[m.movie_id] || ""}
+                  value={userRatings[movie.movie_id] || ""}
                   placeholder="Rate 0–10"
-                  onChange={(e) => handleRate(m.movie_id, e.target.value)}
+                  onChange={(e) =>
+                    setUserRatings((prev) => ({
+                      ...prev,
+                      [movie.movie_id]: e.target.value,
+                    }))
+                  }
                   style={inputStyle}
                 />
                 <button
-                  onClick={() => handleWatchLater(m.movie_id)}
+                  onClick={() =>
+                    handleRate(movie.movie_id, userRatings[movie.movie_id])
+                  }
+                  style={btnStyle}
+                >
+                  Save
+                </button>
+                <button
+                  onClick={() => handleWatchLater(movie.movie_id)}
                   style={btnStyle}
                 >
                   🎥 Watch Later

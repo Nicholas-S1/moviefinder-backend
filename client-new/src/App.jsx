@@ -1,4 +1,4 @@
-import React, { createContext, useState, useEffect } from "react";
+import React, { useState, useEffect } from "react";
 import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
 import Home from "./pages/Home.jsx";
 import Movies from "./pages/Movies.jsx";
@@ -8,13 +8,13 @@ import Signup from "./pages/Signup.jsx";
 import WatchLater from "./pages/WatchLater.jsx";
 import NavBar from "./components/NavBar.jsx";
 import "./index.css";
-
-export const UserContext = createContext(null);
+import UserContext from "./context/userContext";
+import Account from "./pages/Account.jsx";
+import Chart from './pages/Chart';
 
 function App() {
   const [currentUser, setCurrentUser] = useState(null);
 
-  // ✅ Load user from localStorage when app starts
   useEffect(() => {
     const storedUser = localStorage.getItem("movieFinderUser");
     if (storedUser) {
@@ -22,7 +22,6 @@ function App() {
     }
   }, []);
 
-  // ✅ Save user to localStorage when they log in
   useEffect(() => {
     if (currentUser) {
       localStorage.setItem("movieFinderUser", JSON.stringify(currentUser));
@@ -43,6 +42,9 @@ function App() {
             <Route path="/login" element={<Login />} />
             <Route path="/signup" element={<Signup />} />
             <Route path="/watchlater" element={<WatchLater />} />
+            <Route path="/account" element={<Account />} />
+            <Route path="/chart" element={<Chart />} />
+
           </Routes>
         </div>
       </Router>

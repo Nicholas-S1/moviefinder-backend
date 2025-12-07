@@ -1,6 +1,7 @@
 import React, { useState, useContext } from "react";
 import { useNavigate } from "react-router-dom";
-import { UserContext } from "../App.jsx";
+import UserContext from "../context/userContext";
+
 import { API_BASE_URL } from "../config.js";
 
 export default function Signup() {
