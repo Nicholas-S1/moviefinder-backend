@@ -3,7 +3,6 @@ import cors from "cors";
 import dotenv from "dotenv";
 import bcrypt from "bcryptjs";
 import pool from "./db.js";
-import ratingsRouter from "./Ratings.js"; // you can delete later if unused
 
 dotenv.config({ path: "./.env" });
 const app = express();
